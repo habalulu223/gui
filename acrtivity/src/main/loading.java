@@ -5,6 +5,9 @@
  */
 package main;
 
+import d.AdminDashboard;
+import d.dashboard;
+
 /**
  *
  * @author Administrator
@@ -17,20 +20,30 @@ public class loading extends javax.swing.JFrame {
      * Creates new form loading
      */
    // Define a variable to hold the target
-String target;
+String target; 
 
-// CHANGE THE CONSTRUCTOR TO ACCEPT A STRING
-public loading(String destination) { 
+    // 2. CONSTRUCTOR
+    public loading(String destination) {
+       initComponents();
+    setLocationRelativeTo(null); 
     
-    initComponents();
-    setLocationRelativeTo(null);
+    // 1. CLEAN THE DATA
+    // This ensures that even if the DB sends "  admin  ", it becomes "admin"
+    if (destination != null) {
+        this.target = destination.trim(); 
+    } else {
+        this.target = "landing"; // Safety default
+    }
     
-    // --- TIMER CODE ---
+    // DEBUG: Print exactly what arrived so you can fix typos in the database
+    System.out.println("LOADING SCREEN RECEIVED ROLE: '" + this.target + "'");
+
+    // --- TIMER ---
     javax.swing.Timer timer = new javax.swing.Timer(50, new java.awt.event.ActionListener() {
         @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             
-            int currentVal = jProgressBar1.getValue(); // Change jProgressBar1 to your bar's name
+            int currentVal = jProgressBar1.getValue();
             
             if (currentVal < 100) {
                 jProgressBar1.setValue(currentVal + 2);
@@ -38,31 +51,49 @@ public loading(String destination) {
             else {
                 ((javax.swing.Timer)e.getSource()).stop(); 
                 
-                // CHECK DESTINATION
-                if (destination.equals("panell")) {
-                    // Go to Login Panel
-                    // CHANGE 'panel' to your actual login class name if different
+                // ==========================================
+                //  ROUTING LOGIC
+                // ==========================================
+                
+                // 1. CHECK FOR ADMIN 
+                // Checks for "admin", "Admin", or "Administrator"
+                if ("admin".equalsIgnoreCase(target) || "administrator".equalsIgnoreCase(target)) {
+                        System.out.println("-> OPENING ADMIN DASHBOARD");
+                        new d.AdminDashboard().setVisible(true); 
+                } 
+                
+                // 2. CHECK FOR USER
+                // Checks for "user", "User", "customer", or "client"
+                else if ("user".equalsIgnoreCase(target) || "customer".equalsIgnoreCase(target) || "client".equalsIgnoreCase(target)) {
+                    System.out.println("-> OPENING USER DASHBOARD");
+                    new d.dashboard().setVisible(true);
+                }
+                
+                // 3. CHECK FOR LOGOUT REQUEST
+                else if ("login".equalsIgnoreCase(target)) {
+                    System.out.println("-> OPENING LOGIN PANEL");
                     panel login = new panel(); 
                     login.setVisible(true);
-                } 
+                }
+                
+                // 4. DEFAULT FALLBACK (Landing Page)
                 else {
-                    // Go to Landing Page
-                    // CHANGE 'kandingpage' to your actual class name
-                    landingpage home = new landingpage(); 
+                    System.out.println("-> ROLE UNKNOWN ('"+target+"'). GOING TO LANDING PAGE.");
+                    dashboard home = new dashboard(); 
                     home.setVisible(true);
                 }
                 
-                dispose(); 
+                dispose(); // Close Loading Screen
             }
         }
     });
     timer.start();
-}
-// This constructor fixes the errors!
-// It tells Java: "If someone calls me without a destination, assume they mean 'home'."
-public loading() {
-    this("panell"); 
-}
+    }
+
+    // 3. DEFAULT CONSTRUCTOR
+    public loading() {
+        this("landing");
+    }
     
 
     /**

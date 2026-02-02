@@ -137,7 +137,7 @@ setLocationRelativeTo(null); // Center screen
         jLabel1.setBounds(10, 10, 320, 60);
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 0, 670, 80);
+        jPanel2.setBounds(0, 0, 1040, 80);
 
         jLabel3.setText("register ");
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -180,7 +180,7 @@ setLocationRelativeTo(null); // Center screen
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 669, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 718, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -198,7 +198,7 @@ setLocationRelativeTo(null); // Center screen
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
      DBC con = new DBC();  
-   String qry = "INSERT INTO Tbl_user ( username, email, password) VALUES ( ?, ?, ?)";
+   String qry = "INSERT INTO Tbl_user ( username, email, password, role) VALUES ( ?, ?, ?, 'user')";
      con.addRecord (qry, username.getText(), email.getText(), password.getText()  );
      username.setText("");
      email.setText("");

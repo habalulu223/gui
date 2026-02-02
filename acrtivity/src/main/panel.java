@@ -1,12 +1,15 @@
 
 package main;
 
+import d.dashboard;
+import config.DBC;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import javafx.scene.paint.Color;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.sql.*;
+
 
 
 public class panel extends javax.swing.JFrame {
@@ -18,16 +21,16 @@ public class panel extends javax.swing.JFrame {
         initComponents();
         
         // 1. Setup the initial look
-    jTextField1.setText("Enter Username...");
+    username.setText("Enter Username...");
     
 
     // 2. Add the Listener
-    jTextField1.addFocusListener(new FocusListener() {
+    username.addFocusListener(new FocusListener() {
         @Override
         public void focusGained(FocusEvent e) {
             // IF text is the placeholder, clear it
-            if (jTextField1.getText().equals("Enter Username...")) {
-                jTextField1.setText("");
+            if (username.getText().equals("Enter Username...")) {
+                username.setText("");
               
             }
         }
@@ -35,15 +38,15 @@ public class panel extends javax.swing.JFrame {
         @Override
         public void focusLost(FocusEvent e) {
             // IF user didn't type anything, put the placeholder back
-            if (jTextField1.getText().isEmpty()) {
-                jTextField1.setText("Enter Username...");
+            if (username.getText().isEmpty()) {
+                username.setText("Enter Username...");
                
             }
         }
 
    
     });
-    String pass = String.valueOf(jPasswordField1.getPassword());
+    String pass = String.valueOf(password.getPassword());
 
 
     setSize(750, 500); 
@@ -51,33 +54,34 @@ public class panel extends javax.swing.JFrame {
     // 2. Center it
     setLocationRelativeTo(null);
     
-    jPasswordField1.setEchoChar((char)0); // Make visible
-jPasswordField1.setText("Enter Password");
-jPasswordField1.setForeground(new java.awt.Color(153, 153, 153)); // Gray
+    password.setEchoChar((char)0); // Make visible
+password.setText("Enter Password");
+password.setForeground(new java.awt.Color(153, 153, 153)); // Gray
 
 // 2. Add the listener manually
-jPasswordField1.addFocusListener(new java.awt.event.FocusAdapter() {
+password.addFocusListener(new java.awt.event.FocusAdapter() {
     
     // WHEN CLICKED
     public void focusGained(java.awt.event.FocusEvent evt) {
-        String pass = String.valueOf(jPasswordField1.getPassword());
+        String pass = String.valueOf(password.getPassword());
         if (pass.equals("Enter Password")) {
-            jPasswordField1.setText("");
-            jPasswordField1.setForeground(java.awt.Color.BLACK);
-            jPasswordField1.setEchoChar('*'); // Hide password
+            password.setText("");
+            password.setForeground(java.awt.Color.BLACK);
+            password.setEchoChar('*'); // Hide password
         }
     }
 
     // WHEN LEFT
     public void focusLost(java.awt.event.FocusEvent evt) {
-        String pass = String.valueOf(jPasswordField1.getPassword());
+        String pass = String.valueOf(password.getPassword());
         if (pass.length() == 0 || pass.equals("")) {
-            jPasswordField1.setText("Enter Password");
-            jPasswordField1.setForeground(new java.awt.Color(153, 153, 153));
-            jPasswordField1.setEchoChar((char)0); // Show text
+            password.setText("Enter Password");
+            password.setForeground(new java.awt.Color(153, 153, 153));
+            password.setEchoChar((char)0); // Show text
         }
     }
 });
+
     }
         
     /**
@@ -92,8 +96,8 @@ jPasswordField1.addFocusListener(new java.awt.event.FocusAdapter() {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        username = new javax.swing.JTextField();
+        password = new javax.swing.JPasswordField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -112,26 +116,36 @@ jPasswordField1.addFocusListener(new java.awt.event.FocusAdapter() {
         jLabel1.setLabelFor(this);
         jLabel1.setText("Bike shop");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 140, 40));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 140, 40));
 
         getContentPane().add(jPanel1);
         jPanel1.setBounds(0, 0, 770, 70);
 
         jPanel2.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jTextField1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jTextField1.setText("Enter name");
-        jTextField1.setDragEnabled(true);
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+        jPanel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel2MouseClicked(evt);
             }
         });
-        jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 220, 200, 30));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPasswordField1.setText("jPasswordField1");
-        jPanel2.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 280, 200, 30));
+        username.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        username.setText("Enter name");
+        username.setDragEnabled(true);
+        username.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usernameActionPerformed(evt);
+            }
+        });
+        jPanel2.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 220, 200, 30));
+
+        password.setText("jPasswordField1");
+        password.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordActionPerformed(evt);
+            }
+        });
+        jPanel2.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 250, 200, 30));
 
         jLabel2.setBackground(new java.awt.Color(255, 255, 255));
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -147,7 +161,7 @@ jPasswordField1.addFocusListener(new java.awt.event.FocusAdapter() {
                 jLabel2MouseClicked(evt);
             }
         });
-        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 320, 34, -1));
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 280, 34, 20));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel3.setText("register");
@@ -156,21 +170,21 @@ jPasswordField1.addFocusListener(new java.awt.event.FocusAdapter() {
                 jLabel3MouseClicked(evt);
             }
         });
-        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 320, 50, -1));
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 280, 50, 20));
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel4.setText("welcome too bike shop");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 140, 380, 110));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 140, 380, 110));
 
         getContentPane().add(jPanel2);
-        jPanel2.setBounds(0, 70, 770, 400);
+        jPanel2.setBounds(0, 70, 770, 410);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_usernameActionPerformed
 
     private void jLabel2MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_jLabel2MouseWheelMoved
         // TODO add your handling code here:
@@ -179,8 +193,6 @@ jPasswordField1.addFocusListener(new java.awt.event.FocusAdapter() {
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
 
   
-String username = jTextField1.getText();
-String password = String.valueOf(jPasswordField1.getPassword());
 
 // 2. DEFINE A VARIABLE TO TRACK ERRORS
 boolean hasError = false;
@@ -188,22 +200,33 @@ boolean hasError = false;
 // 3. CHECK USERNAME
 // If username is empty OR equals the placeholder text
 if (username.equals("") || username.equals("Enter Username...")) {
-    jTextField1.setVisible(true); // Show Red *
-    jTextField1.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED)); // Red Border
+    username.setVisible(true); // Show Red *
+    username.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED)); // Red Border
     hasError = true;
 } else {
-    jTextField1.setVisible(false); // Hide Red *
-    jTextField1.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)); // Reset Border
+    username.setVisible(false); // Hide Red *
+    username.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)); // Reset Border
 }
 
 // 4. CHECK PASSWORD
+
+
+
+
+
+
+
+
+
+
+
 if (password.equals("") || password.equals("Enter Password")) {
-    jPasswordField1.setVisible(true); // Show Red *
-    jPasswordField1.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED)); // Red Border
+    password.setVisible(true); // Show Red *
+    password.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED)); // Red Border
     hasError = true;
 } else {
-    jPasswordField1.setVisible(false); // Hide Red *
-    jPasswordField1.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)); // Reset Border
+    password.setVisible(false); // Hide Red *
+    password.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)); // Reset Border
 }
 
 // 5. PROCEED ONLY IF NO ERRORS
@@ -228,6 +251,59 @@ if (hasError == false) {
         load.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordActionPerformed
+
+    private void jPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseClicked
+// 1. GET INPUTS
+String user = username.getText();
+String pass = String.valueOf(password.getPassword());
+
+if(user.isEmpty() || pass.isEmpty()) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Fields cannot be empty");
+    return;
+}
+
+try {
+    config.DBC db = new config.DBC();
+    java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/ConnectionDB8", "root", "");
+    
+    // 2. GET ALL DATA (*) SO WE CAN SAVE IT TO SESSION
+    String sql = "SELECT * FROM Tbl_user WHERE username = ? AND password = ?";
+    java.sql.PreparedStatement pst = con.prepareStatement(sql);
+    pst.setString(1, user);
+    pst.setString(2, pass);
+    
+    java.sql.ResultSet rs = pst.executeQuery();
+
+    if (rs.next()) {
+        // --- SUCCESS ---
+        
+        // 3. SAVE DATA TO SESSION (The Global Storage)
+        // Make sure your ID column is named 'u_id' or 'id'
+        config.DBC.username = rs.getString("username");
+        config.DBC.email = rs.getString("email");
+        config.DBC.role = rs.getString("role");
+        
+        System.out.println("User Logged in: " + config.DBC.username);
+
+        // 4. SEND ROLE TO LOADING
+        loading load = new loading(config.DBC.role);
+        load.setVisible(true);
+        this.dispose();
+        
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "Invalid Username or Password");
+    }
+    
+    con.close();
+
+} catch (Exception e) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+}
+    }//GEN-LAST:event_jPanel2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -270,7 +346,7 @@ if (hasError == false) {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField password;
+    private javax.swing.JTextField username;
     // End of variables declaration//GEN-END:variables
 }
