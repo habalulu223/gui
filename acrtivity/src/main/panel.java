@@ -106,7 +106,7 @@ password.addFocusListener(new java.awt.event.FocusAdapter() {
         setBackground(new java.awt.Color(102, 102, 102));
         getContentPane().setLayout(null);
 
-        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
+        jPanel1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel1.setAutoscrolls(true);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -191,58 +191,65 @@ password.addFocusListener(new java.awt.event.FocusAdapter() {
     }//GEN-LAST:event_jLabel2MouseWheelMoved
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+// 1. GET INPUTS & REMOVE SPACES
+String u = username.getText().trim(); // .trim() removes accidental spaces
+String p = String.valueOf(password.getPassword()).trim();
 
-  
-
-// 2. DEFINE A VARIABLE TO TRACK ERRORS
-boolean hasError = false;
-
-// 3. CHECK USERNAME
-// If username is empty OR equals the placeholder text
-if (username.equals("") || username.equals("Enter Username...")) {
-    username.setVisible(true); // Show Red *
-    username.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED)); // Red Border
-    hasError = true;
-} else {
-    username.setVisible(false); // Hide Red *
-    username.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)); // Reset Border
-}
-
-// 4. CHECK PASSWORD
-
-
-
-
-
-
-
-
-
-
-
-if (password.equals("") || password.equals("Enter Password")) {
-    password.setVisible(true); // Show Red *
-    password.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED)); // Red Border
-    hasError = true;
-} else {
-    password.setVisible(false); // Hide Red *
-    password.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)); // Reset Border
-}
-
-// 5. PROCEED ONLY IF NO ERRORS
-if (hasError == false) {
-    // --- YOUR SUCCESS CODE GOES HERE ---
+// --- STRICT VALIDATION: CHECK IF EMPTY ---
+if (u.equals("") || p.equals("")) {
+    // Show Error Message
+    javax.swing.JOptionPane.showMessageDialog(this, 
+        "Username and Password are required!", 
+        "Validation Error", 
+        javax.swing.JOptionPane.ERROR_MESSAGE);
     
-    // Check credentials (Optional)
-    // if (username.equals("admin") && password.equals("123")) {
+    // STOP THE CODE HERE. Do not proceed to database.
+    return; 
+}
+
+// --- IF NOT EMPTY, PROCEED TO DATABASE CHECK ---
+try {
+    java.sql.Connection con = config.DBC.connectDB();
+    
+    // Check if user exists
+    String sql = "SELECT * FROM Tbl_user WHERE username = ? AND password = ?";
+    java.sql.PreparedStatement pst = con.prepareStatement(sql);
+    pst.setString(1, u);
+    pst.setString(2, p);
+    
+    java.sql.ResultSet rs = pst.executeQuery();
+
+    if (rs.next()) {
+        // --- LOGIN SUCCESS ---
         
-       loading load = new loading("page");
+        // Get Role safely
+        String dbRole = rs.getString("role");
+        if(dbRole == null || dbRole.isEmpty()) dbRole = "user";
+
+        // Save to Global Config
+        config.DBC.username = rs.getString("username");
+        config.DBC.email = rs.getString("email");
+        config.DBC.role = dbRole;
+
+        System.out.println("Login Success: " + u + " (" + dbRole + ")");
+
+        // Open Loading Screen
+        loading load = new loading(dbRole); 
         load.setVisible(true);
-        this.dispose();
+        this.dispose(); // Close Login
         
-    // } else {
-    //    javax.swing.JOptionPane.showMessageDialog(this, "Wrong Account!");
-    // }
+    } else {
+        // --- LOGIN FAILED ---
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Invalid Username or Password!", 
+            "Access Denied", 
+            javax.swing.JOptionPane.WARNING_MESSAGE);
+    }
+    
+    rs.close(); pst.close(); con.close();
+
+} catch (Exception e) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
 }
     }//GEN-LAST:event_jLabel2MouseClicked
 
@@ -258,50 +265,79 @@ if (hasError == false) {
 
     private void jPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseClicked
 // 1. GET INPUTS
-String user = username.getText();
-String pass = String.valueOf(password.getPassword());
+String u = username.getText();
+String p = String.valueOf(password.getPassword());
 
-if(user.isEmpty() || pass.isEmpty()) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Fields cannot be empty");
-    return;
+// --- VALIDATION 1: CHECK FOR EMPTY FIELDS ---
+if(u.trim().isEmpty() || p.trim().isEmpty()) {
+    javax.swing.JOptionPane.showMessageDialog(this, 
+        "Username and Password cannot be empty!", 
+        "Input Error", 
+        javax.swing.JOptionPane.ERROR_MESSAGE);
+    return; // Stop the code here
 }
 
 try {
-    config.DBC db = new config.DBC();
-    java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/ConnectionDB8", "root", "");
+    // 2. CONNECT TO DATABASE
+    java.sql.Connection con = config.DBC.connectDB();
     
-    // 2. GET ALL DATA (*) SO WE CAN SAVE IT TO SESSION
+    // Use PreparedStatement to prevent errors and hacking
     String sql = "SELECT * FROM Tbl_user WHERE username = ? AND password = ?";
     java.sql.PreparedStatement pst = con.prepareStatement(sql);
-    pst.setString(1, user);
-    pst.setString(2, pass);
+    pst.setString(1, u);
+    pst.setString(2, p);
     
     java.sql.ResultSet rs = pst.executeQuery();
 
+    // --- VALIDATION 2: CHECK IF USER EXISTS ---
     if (rs.next()) {
-        // --- SUCCESS ---
+        // LOGIN SUCCESS!
         
-        // 3. SAVE DATA TO SESSION (The Global Storage)
-        // Make sure your ID column is named 'u_id' or 'id'
+        // 3. GET DATA FROM DATABASE
+        String dbRole = rs.getString("role");
+        
+        // Safety: If role is empty in DB, default to "user"
+        if (dbRole == null || dbRole.trim().isEmpty()) {
+            dbRole = "user";
+        }
+
+        // 4. SAVE TO GLOBAL VARIABLES (DBC)
         config.DBC.username = rs.getString("username");
         config.DBC.email = rs.getString("email");
-        config.DBC.role = rs.getString("role");
-        
-        System.out.println("User Logged in: " + config.DBC.username);
+        config.DBC.role = dbRole;
+        // config.DBC.id = rs.getInt("u_id"); // Uncomment if you added 'id' to DBC
 
-        // 4. SEND ROLE TO LOADING
-        loading load = new loading(config.DBC.role);
+        // 5. SUCCESS MESSAGE
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Login Successful! Welcome " + config.DBC.username, 
+            "Success", 
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+
+        // 6. OPEN LOADING SCREEN (Pass the role)
+        loading load = new loading(dbRole); 
         load.setVisible(true);
-        this.dispose();
+        this.dispose(); // Close Login Window
         
     } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Invalid Username or Password");
+        // LOGIN FAILED (Invalid Username/Password)
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Invalid Username or Password. Please try again.", 
+            "Login Failed", 
+            javax.swing.JOptionPane.WARNING_MESSAGE);
     }
     
+    // Close connections
+    rs.close();
+    pst.close();
     con.close();
 
 } catch (Exception e) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    // SYSTEM ERROR (Database connection failed, etc.)
+    javax.swing.JOptionPane.showMessageDialog(this, 
+        "System Error: " + e.getMessage(), 
+        "Error", 
+        javax.swing.JOptionPane.ERROR_MESSAGE);
+    System.out.println("Login Error: " + e);
 }
     }//GEN-LAST:event_jPanel2MouseClicked
 

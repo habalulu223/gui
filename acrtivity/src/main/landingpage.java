@@ -126,7 +126,7 @@ setLocationRelativeTo(null); // Center screen
         jPanel1.setMinimumSize(new java.awt.Dimension(25, 14));
         jPanel1.setLayout(null);
 
-        jPanel2.setBackground(new java.awt.Color(153, 153, 153));
+        jPanel2.setBackground(new java.awt.Color(102, 102, 102));
         jPanel2.setLayout(null);
 
         jLabel1.setBackground(new java.awt.Color(255, 255, 255));

@@ -16,78 +16,71 @@ public class loading extends javax.swing.JFrame {
           
     static boolean isLogout;
 
-    /**
-     * Creates new form loading
-     */
-   // Define a variable to hold the target
-String target; 
+   String target; 
 
-    // 2. CONSTRUCTOR
+    // CONSTRUCTOR: Receives the destination from Login
     public loading(String destination) {
-       initComponents();
-    setLocationRelativeTo(null); 
-    
-    // 1. CLEAN THE DATA
-    // This ensures that even if the DB sends "  admin  ", it becomes "admin"
-    if (destination != null) {
-        this.target = destination.trim(); 
-    } else {
-        this.target = "landing"; // Safety default
-    }
-    
-    // DEBUG: Print exactly what arrived so you can fix typos in the database
-    System.out.println("LOADING SCREEN RECEIVED ROLE: '" + this.target + "'");
-
-    // --- TIMER ---
-    javax.swing.Timer timer = new javax.swing.Timer(50, new java.awt.event.ActionListener() {
-        @Override
-        public void actionPerformed(java.awt.event.ActionEvent e) {
-            
-            int currentVal = jProgressBar1.getValue();
-            
-            if (currentVal < 100) {
-                jProgressBar1.setValue(currentVal + 2);
-            } 
-            else {
-                ((javax.swing.Timer)e.getSource()).stop(); 
-                
-                // ==========================================
-                //  ROUTING LOGIC
-                // ==========================================
-                
-                // 1. CHECK FOR ADMIN 
-                // Checks for "admin", "Admin", or "Administrator"
-                if ("admin".equalsIgnoreCase(target) || "administrator".equalsIgnoreCase(target)) {
-                        System.out.println("-> OPENING ADMIN DASHBOARD");
-                        new d.AdminDashboard().setVisible(true); 
-                } 
-                
-                // 2. CHECK FOR USER
-                // Checks for "user", "User", "customer", or "client"
-                else if ("user".equalsIgnoreCase(target) || "customer".equalsIgnoreCase(target) || "client".equalsIgnoreCase(target)) {
-                    System.out.println("-> OPENING USER DASHBOARD");
-                    new d.dashboard().setVisible(true);
-                }
-                
-                // 3. CHECK FOR LOGOUT REQUEST
-                else if ("login".equalsIgnoreCase(target)) {
-                    System.out.println("-> OPENING LOGIN PANEL");
-                    panel login = new panel(); 
-                    login.setVisible(true);
-                }
-                
-                // 4. DEFAULT FALLBACK (Landing Page)
-                else {
-                    System.out.println("-> ROLE UNKNOWN ('"+target+"'). GOING TO LANDING PAGE.");
-                    dashboard home = new dashboard(); 
-                    home.setVisible(true);
-                }
-                
-                dispose(); // Close Loading Screen
-            }
+        initComponents();
+        setLocationRelativeTo(null); // Center screen
+        
+        // 1. CLEAN THE INPUT
+        if (destination != null) {
+            this.target = destination.trim(); 
+        } else {
+            this.target = "landing"; // Safety default
         }
-    });
-    timer.start();
+        
+        System.out.println("LOADING STARTED. TARGET: " + this.target);
+
+        // 2. START THE PROGRESS BAR TIMER
+        javax.swing.Timer timer = new javax.swing.Timer(50, new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                
+                int currentVal = jProgressBar1.getValue();
+                
+                if (currentVal < 100) {
+                    jProgressBar1.setValue(currentVal + 2); // Speed of loading
+                } 
+                else {
+                    ((javax.swing.Timer)e.getSource()).stop(); // Stop timer
+                    
+                    // ==========================================
+                    //  CHECKING LOGIC (The Router)
+                    // ==========================================
+                    
+                    // CASE A: ADMIN -> Go to AdminDashboard
+                    if ("admin".equalsIgnoreCase(target) || "administrator".equalsIgnoreCase(target)) {
+                         System.out.println("-> OPENING ADMIN DASHBOARD");
+                         new d.AdminDashboard().setVisible(true); 
+                    } 
+                    
+                    // CASE B: USER -> Go to User Dashboard
+                    else if ("user".equalsIgnoreCase(target) || "customer".equalsIgnoreCase(target)) {
+                        System.out.println("-> OPENING USER DASHBOARD");
+                        new d.dashboard().setVisible(true);
+                    }
+                    
+                    // CASE C: LOGOUT/LOGIN -> Go back to Login Panel
+                    else if ("login".equalsIgnoreCase(target) || "panel".equalsIgnoreCase(target) || "panell".equalsIgnoreCase(target)) {
+                        System.out.println("-> OPENING LOGIN PANEL");
+                        new panel().setVisible(true); 
+                    }else if ("addproduct".equalsIgnoreCase(target)) {
+                        System.out.println("-> OPENING ADD PRODUCT FORM");
+                            new d.AddProductFrame().setVisible(true); 
+                         }
+                    
+                    // CASE D: UNKNOWN -> Go to Landing Page (Safety)
+                    else {
+                        System.out.println("-> TARGET UNKNOWN (" + target + "). GOING TO LANDING PAGE.");
+                        new landingpage().setVisible(true);
+                    }
+                    
+                    dispose(); // Close this Loading Screen
+                }
+            }
+        });
+        timer.start();
     }
 
     // 3. DEFAULT CONSTRUCTOR
