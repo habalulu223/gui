@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import net.proteanit.sql.DbUtils;
 
 public class DBC {
 
@@ -56,6 +57,39 @@ public class DBC {
             System.out.println("Record added successfully!");
         } catch (SQLException e) {
             System.out.println("Error adding record: " + e.getMessage());
+        }
+    }
+
+    
+    public static void closeConnection(Connection con) {
+        try {
+            if (con != null && !con.isClosed()) {
+                con.close();
+                System.out.println("Connection Closed Successfully.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error closing connection: " + e.getMessage());
+        }
+    }
+    
+
+    
+      public static void displayData(String sql, javax.swing.JTable table, Object... values) {
+        try (Connection conn = connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // Set the parameters (if any)
+            for (int i = 0; i < values.length; i++) {
+                pstmt.setObject(i + 1, values[i]);
+            }
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Automatically maps the ResultSet to your JTable
+                table.setModel(DbUtils.resultSetToTableModel(rs));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error displaying data: " + e.getMessage());
         }
     }
 }

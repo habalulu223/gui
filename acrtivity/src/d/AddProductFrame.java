@@ -212,7 +212,7 @@ public class AddProductFrame extends javax.swing.JFrame {
         System.out.println("CRITICAL ERROR: " + e.getMessage());
         e.printStackTrace(); // Prints the full red error in output
         javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
-    }        // TODO add your handling code here:
+    }   // TODO add your handling code here:
     }//GEN-LAST:event_jLabel1MouseClicked
 
     private void txtPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPriceActionPerformed
